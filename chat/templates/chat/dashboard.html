@@ -1,0 +1,78 @@
+{% extends 'chat/base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">Django Chat</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-sm btn-danger text-white ms-2" href="{% url 'logout' %}">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">  {# pt-4 to avoid content under navbar #}
+    <h2 class="mb-4 text-center">Welcome, {{ request.user.username }} 👋</h2>
+
+    <!-- Private Chat Section -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">💬 Private Chats</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for user in users %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><strong>{{ user.username }}</strong> — {{ user.email }}</span>
+                    <a href="{% url 'chat_with' user.username %}" class="btn btn-outline-primary btn-sm">Chat</a>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted">No other users available.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Group Chat Section -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">👥 Group Chat Rooms</h5>
+            <a href="{% url 'create_room' %}" class="btn btn-light btn-sm">+ Create Room</a>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for room in rooms %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>{{ room.name }}</strong>
+                    <div>
+                        <a href="{% url 'chat_room' room.id %}" class="btn btn-outline-success btn-sm me-2">Join</a>
+
+                        {% if request.user == room.creator %}
+                            <a href="{% url 'manage_group' room.id %}" class="btn btn-sm btn-outline-info me-2">⚙ Manage</a>
+                            <form method="POST" action="{% url 'delete_group' room.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Are you sure you want to delete this group?');">
+                                    🗑 Delete
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted">No chat rooms found.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

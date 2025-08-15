@@ -1,0 +1,277 @@
+{% extends 'chat/base.html' %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">Django Chat</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'room_list' %}">Rooms</a></li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-sm btn-danger text-white ms-2" href="{% url 'logout' %}">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: #f9fafb;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .chat-container {
+    max-width: 900px;
+    margin: 1.5rem auto 3rem;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    padding: 1rem 1.5rem;
+    background-color: #16a34a; /* green */
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.5rem;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+  }
+
+  #chat-box {
+    flex-grow: 1;
+    padding: 1rem 1.5rem;
+    overflow-y: auto;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .message {
+    margin-bottom: 0.8rem;
+    max-width: 70%;
+    word-wrap: break-word;
+  }
+
+  .message.you {
+    align-self: flex-end;
+    background-color: #dcfce7;
+    border-radius: 15px 15px 0 15px;
+    padding: 0.6rem 1rem;
+    color: #166534;
+  }
+
+  .message.other {
+    align-self: flex-start;
+    background-color: #f0fdf4;
+    border-radius: 15px 15px 15px 0;
+    padding: 0.6rem 1rem;
+    color: #14532d;
+  }
+
+  .message small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #4b5563;
+    font-size: 0.75rem;
+  }
+
+  .attachment-link {
+    margin-top: 0.3rem;
+    display: inline-block;
+    font-size: 0.9rem;
+    color: #059669;
+    text-decoration: none;
+  }
+
+  .attachment-link:hover {
+    text-decoration: underline;
+  }
+
+  .chat-inputs {
+    padding: 1rem 1.5rem;
+    background: #ecfdf5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+  }
+
+  #messageInput {
+    flex-grow: 1;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 1.2rem;
+    border: 1px solid #a7f3d0;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  #messageInput:focus {
+    border-color: #059669;
+    box-shadow: 0 0 8px rgba(5, 150, 105, 0.4);
+  }
+
+  #sendButton {
+    background-color: #16a34a;
+    border: none;
+    color: white;
+    padding: 0 1.4rem;
+    border-radius: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  #sendButton:hover {
+    background-color: #15803d;
+  }
+
+  #mediaInput {
+    border-radius: 1.2rem;
+    border: 1px solid #a7f3d0;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    flex-basis: 200px;
+  }
+
+  #mediaUploadButton {
+    background-color: #059669;
+    border: none;
+    color: white;
+    padding: 0 1.4rem;
+    border-radius: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  #mediaUploadButton:hover {
+    background-color: #047857;
+  }
+
+  @media (max-width: 576px) {
+    .chat-container {
+      height: 90vh;
+      border-radius: 0;
+      margin: 0;
+    }
+    .chat-inputs {
+      flex-direction: column;
+    }
+    #mediaInput {
+      flex-basis: 100%;
+    }
+  }
+</style>
+
+<div class="chat-container">
+  <div class="chat-header">
+    Group Chat - {{ room.name }}
+  </div>
+
+  <div id="chat-box" aria-live="polite" aria-label="Group chat messages" role="log">
+    {% for msg in messages %}
+      <div class="message {% if msg.sender.username == request.user.username %}you{% else %}other{% endif %}">
+        <strong>{% if msg.sender.username == request.user.username %}You{% else %}{{ msg.sender.username }}{% endif %}</strong>:
+        {% if msg.content %}
+          {{ msg.content }}
+        {% endif %}
+        {% if msg.media %}
+          <a href="{{ msg.media.url }}" target="_blank" class="attachment-link">📎 View Attachment</a>
+        {% endif %}
+        <small>{{ msg.formatted_time }}</small>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="alert alert-info text-center mb-3">
+    <strong>Group Created:</strong> {{ group_created_time }}
+    <br>
+    <small>By {{ room.creator.username }}</small>
+  </div>
+
+
+  <form id="messageForm" class="chat-inputs" autocomplete="off">
+    <input type="text" id="messageInput" placeholder="Type a message..." required autocomplete="off">
+    <button id="sendButton" type="submit" aria-label="Send message">Send</button>
+  </form>
+
+  <form id="mediaUploadForm" class="chat-inputs" enctype="multipart/form-data" autocomplete="off">
+    <input type="file" id="mediaInput" accept="image/*,video/*,application/pdf" aria-label="Upload file to send">
+    <button id="mediaUploadButton" type="submit" aria-label="Send file">📎 Send File</button>
+  </form>
+</div>
+
+<script>
+const currentUser = "{{ request.user.username }}";
+const chatSocket = new WebSocket(
+    'ws://' + window.location.host + '/ws/chat/group/{{ room.id }}/'
+);
+const chatBox = document.getElementById('chat-box');
+
+// Receive messages
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    if (!data.sender || (!data.message && !data.media_url)) {
+        console.error("Invalid message data:", data);
+        return;
+    }
+
+    const senderName = (data.sender === currentUser) ? "You" : data.sender;
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message ' + (data.sender === currentUser ? 'you' : 'other');
+
+    let html = `<strong>${senderName}</strong>: `;
+    if (data.message) html += data.message;
+    if (data.media_url) html += `<div><a href="${data.media_url}" target="_blank" class="attachment-link">📎 View Attachment</a></div>`;
+    html += `<small>${data.timestamp}</small>`;
+
+    msgDiv.innerHTML = html;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+};
+
+// Send text message
+document.getElementById('messageForm').onsubmit = function(e) {
+    e.preventDefault();
+    const message = document.getElementById('messageInput').value.trim();
+    if (message) {
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'media_url': ''
+        }));
+        document.getElementById('messageInput').value = '';
+    }
+};
+
+// Send media
+document.getElementById('mediaUploadForm').onsubmit = function(e) {
+    e.preventDefault();
+    const file = document.getElementById('mediaInput').files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        chatSocket.send(JSON.stringify({
+            'message': '',
+            'media_url': event.target.result
+        }));
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('mediaInput').value = '';
+};
+</script>
+{% endblock %}

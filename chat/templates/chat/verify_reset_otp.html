@@ -1,0 +1,102 @@
+{% extends 'chat/base.html' %}
+{% block title %}Verify Reset OTP{% endblock %}
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+  <div class="card p-4 shadow rounded-4" style="min-width: 420px;">
+    <h2 class="text-center mb-3">🔑 Verify OTP</h2>
+    <p class="text-center text-muted mb-2">
+      We've sent an OTP to your email. Please enter it below to verify.
+    </p>
+
+    <!-- Countdown + Resend -->
+    <div class="text-center mb-3">
+      <p class="text-danger fw-bold mb-2">
+        OTP expires in <span id="timer">30</span> seconds
+      </p>
+      <button id="resendBtn" class="btn btn-outline-primary btn-sm" style="display:none;">
+        Resend OTP
+      </button>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="otp" class="form-label">One-Time Password (OTP)</label>
+        <input type="text" name="otp" class="form-control" id="otp" placeholder="Enter OTP" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Verify</button>
+    </form>
+
+    <p class="text-center mt-3 mb-0">
+      Back to <a href="{% url 'forgot_password' %}">Forgot Password</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  // ---- CSRF helper ----
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  // ---- Timer + Resend logic ----
+  let seconds = 30;
+  const timerEl = document.getElementById('timer');
+  const resendBtn = document.getElementById('resendBtn');
+
+  const tick = setInterval(() => {
+    seconds--;
+    timerEl.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(tick);
+      resendBtn.style.display = 'inline-block';
+    }
+  }, 1000);
+
+  resendBtn.addEventListener('click', async () => {
+    resendBtn.disabled = true;
+
+    try {
+      const formData = new FormData();
+      formData.append('kind', 'reset'); // reset flow
+
+      const res = await fetch("{% url 'resend_otp' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrftoken },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        alert('A new OTP has been sent to your email.');
+        // reset countdown
+        seconds = data.seconds || 30;
+        timerEl.textContent = seconds;
+        resendBtn.style.display = 'none';
+        resendBtn.disabled = false;
+
+        const newTick = setInterval(() => {
+          seconds--;
+          timerEl.textContent = seconds;
+          if (seconds <= 0) {
+            clearInterval(newTick);
+            resendBtn.style.display = 'inline-block';
+          }
+        }, 1000);
+      } else {
+        alert(data.error || 'Failed to resend OTP.');
+        resendBtn.disabled = false;
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Something went wrong. Please try again.');
+      resendBtn.disabled = false;
+    }
+  });
+</script>
+{% endblock %}

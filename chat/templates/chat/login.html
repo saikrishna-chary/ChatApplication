@@ -1,0 +1,79 @@
+{% extends 'chat/base.html' %}
+{% block title %}Login{% endblock %}
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .login-card {
+    min-width: 400px;
+    max-width: 420px;
+    background: #fff;
+    padding: 2.5rem 2.8rem;
+    border-radius: 1.2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  .btn-login { background: #4f46e5; font-weight: 600; padding: 0.65rem 0; border-radius: 0.6rem; }
+  .btn-login:hover { background-color: #3730a3; transform: translateY(-2px); }
+  .register-link, .forgot-link { color: #2563eb; font-weight: 600; text-decoration: none; }
+  .register-link:hover, .forgot-link:hover { color: #1d4ed8; text-decoration: underline; }
+  @keyframes fadeInUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+</style>
+
+<!-- Toast Alert -->
+{% if messages %}
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    {% for message in messages %}
+    <div class="toast align-items-center text-bg-danger border-0" role="alert" data-bs-delay="3000">
+      <div class="d-flex">
+        <div class="toast-body">
+          {{ message }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="login-card">
+    <h2 class="text-center">🔐 Login</h2>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="mb-4">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" required autofocus />
+      </div>
+      <div class="mb-2">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required />
+      </div>
+      <div class="text-end mb-4">
+        <a href="{% url 'forgot_password' %}" class="forgot-link">Forgot Password?</a>
+      </div>
+      <button type="submit" class="btn btn-login w-100">Login</button>
+    </form>
+    <p class="text-center mt-4 mb-0">
+      Don't have an account?
+      <a href="{% url 'register' %}" class="register-link">Register here</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+    toastElList.map(function(toastEl) {
+      var toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    });
+  });
+</script>
+{% endblock %}

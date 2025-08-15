@@ -1,0 +1,72 @@
+{% extends 'chat/base.html' %}
+{% block title %}Welcome{% endblock %}
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #4f46e5, #3b82f6);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .welcome-card {
+        max-width: 650px;
+        width: 100%;
+        background: #fff;
+        padding: 2.5rem;
+        border-radius: 1.2rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .welcome-card h1 {
+        font-weight: 700;
+        font-size: 2.4rem;
+        color: #1e293b;
+    }
+
+    .welcome-card p.lead {
+        color: #475569;
+        font-size: 1.1rem;
+    }
+
+    .btn-custom {
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    hr {
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .footer-text {
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="welcome-card text-center">
+        <h1 class="mb-3">💬 Django Chat App</h1>
+        <p class="lead">Real-time chat platform built with Django, Channels & Redis.</p>
+
+        <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg btn-custom px-4">🔐 Login</a>
+            <a href="{% url 'register' %}" class="btn btn-outline-success btn-lg btn-custom px-4">📝 Register</a>
+        </div>
+
+        <hr class="mt-5">
+        <p class="footer-text mb-0">Made with ❤️ by saikrishna</p>
+    </div>
+</div>
+{% endblock %}

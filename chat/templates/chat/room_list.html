@@ -1,0 +1,172 @@
+{% extends 'chat/base.html' %}
+{% block title %}Group Chat Rooms{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">Django Chat</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-sm btn-danger text-white ms-2" href="{% url 'logout' %}">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: #f8fafc;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 2.5rem auto 4rem;
+  }
+
+  h2 {
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .list-group {
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.3s ease;
+  }
+
+  .list-group-item:last-child {
+    border-bottom: none;
+  }
+
+  .list-group-item:hover {
+    background-color: #eef2ff;
+  }
+
+  .list-group-item div strong {
+    font-size: 1.1rem;
+    color: #334155;
+  }
+
+  .list-group-item div small {
+    color: #94a3b8;
+    margin-left: 0.5rem;
+    font-weight: 500;
+  }
+
+  .btn-success {
+    background-color: #4f46e5;
+    border: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-success:hover {
+    background-color: #4338ca;
+  }
+
+  .btn-outline-success {
+    color: #22c55e;
+    border-color: #22c55e;
+    font-weight: 600;
+  }
+
+  .btn-outline-success:hover {
+    background-color: #22c55e;
+    color: white;
+    border-color: #22c55e;
+  }
+
+  .btn-outline-info {
+    color: #0ea5e9;
+    border-color: #0ea5e9;
+    font-weight: 600;
+  }
+
+  .btn-outline-info:hover {
+    background-color: #0ea5e9;
+    color: white;
+    border-color: #0ea5e9;
+  }
+
+  .alert-warning {
+    max-width: 720px;
+    margin: 1rem auto;
+    font-weight: 600;
+    color: #92400e;
+    background-color: #fef3c7;
+    border-color: #fde68a;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 6px 20px rgba(253, 230, 138, 0.4);
+  }
+
+  .d-flex.justify-content-between.mb-3 {
+    margin-bottom: 1.5rem !important;
+  }
+
+  @media (max-width: 576px) {
+    .container {
+      margin: 1.5rem 1rem 3rem;
+      max-width: 100%;
+    }
+
+    .list-group-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .list-group-item div:last-child {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+</style>
+
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>👥 All Group Chat Rooms</h2>
+    <a href="{% url 'create_room' %}" class="btn btn-success">+ Create New Room</a>
+  </div>
+
+  <div class="list-group shadow-sm">
+    {% for room in rooms %}
+      <div class="list-group-item">
+        <div>
+          <strong>{{ room.name }}</strong>
+          <small>ID: {{ room.id }}</small>
+        </div>
+        <div>
+          <a href="{% url 'chat_room' room.id %}" class="btn btn-sm btn-outline-success me-2">Join</a>
+          {% if request.user == room.creator %}
+            <a href="{% url 'manage_group' room.id %}" class="btn btn-sm btn-outline-info">⚙ Manage</a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="alert alert-warning">No rooms available.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
