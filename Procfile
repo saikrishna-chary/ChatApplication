@@ -1,0 +1,1 @@
+web: uvicorn chat_config.asgi:application --host 127.0.1 --port 6380
