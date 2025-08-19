@@ -1,1 +1,1 @@
-web: uvicorn chat_config.asgi:application --host 127.0.1 --port 6380
+web: python manage.py migrate && python manage.py collectstatic --noinput && uvicorn chat_config.asgi:application --host 0.0.0.0 --port $PORT
