@@ -2,11 +2,25 @@ services:
   - type: web
     name: chat-app
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: daphne -b 0.0.0.0 -p $PORT chat_config.asgi:application
+    startCommand: uvicorn chat_project.asgi:application --host 0.0.0.0 --port $PORT
     envVars:
-      - key: REDIS_URL
-        fromService:
-          type: keyvalue
-          name: chat-cache
-          property: connectionString
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        value: "your-secret-key"
+      - key: ALLOWED_HOSTS
+        value: "yourapp.onrender.com"
+      - key: DB_NAME
+        value: "defaultdb"
+      - key: DB_USER
+        value: "avnadmin"
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        value: "chatapplication-saikrishna70950-chat-application.f.aivencloud.com"
+      - key: DB_PORT
+        value: "19605"
+    releaseCommand: |
+      python manage.py migrate && python manage.py collectstatic --noinput
