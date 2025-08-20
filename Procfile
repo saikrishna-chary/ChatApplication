@@ -1,1 +1,1 @@
-web: daphne -b 0.0.0.0 -p $PORT chat_config.asgi:application
+web: uvicorn chat_config.asgi:application --host 0.0.0.0 --port 10000

@@ -297,7 +297,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # =======================
 # Channels / Redis
 # =======================
-REDIS_URL = config("REDIS_URL", default="redis://127.0.0.1:6380")
+REDIS_URL = config("REDIS_URL", default="redis://red-d2j0kfali9vc73dq4p60:6379")
 
 CHANNEL_LAYERS = {
     "default": {
