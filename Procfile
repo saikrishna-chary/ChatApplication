@@ -1,1 +1,1 @@
-web: python manage.py migrate && uvicorn chat_config.asgi:application --host 0.0.0.0 --port $PORT
+web: uvicorn chat_config.asgi:application --host 0.0.0.0 --port $PORT

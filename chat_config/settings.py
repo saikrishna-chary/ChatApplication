@@ -251,13 +251,12 @@ ASGI_APPLICATION = "chat_config.asgi.application"
 # Use DATABASE_URL if provided, else fallback to local MySQL
 DATABASES = {
     "default": dj_database_url.parse(
-        config(
-            "DATABASE_URL",
-            default="mysql://root:saikrishna2001@@localhost:3306/chat_db"
-        ),
+        config("DATABASE_URL"),
         conn_max_age=600,
+        ssl_require=True,   # 👈 forces SSL
     )
 }
+
 
 # =======================
 # Authentication
