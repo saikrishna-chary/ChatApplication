@@ -249,13 +249,26 @@ ASGI_APPLICATION = "chat_config.asgi.application"
 # Database
 # =======================
 # Use DATABASE_URL if provided, else fallback to local MySQL
+import dj_database_url
+from decouple import config
+
+# Get database URL from environment
+DATABASE_URL = config(
+    "DATABASE_URL",
+    default="mysql://root:saikrishna2001@@localhost:3306/chat_db"
+)
+
+# Parse database config
+db_config = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+
+# Fix for Aiven MySQL: use ssl_mode instead of sslmode
+if db_config["ENGINE"] == "django.db.backends.mysql":
+    db_config["OPTIONS"] = {"ssl": {"ssl_mode": "REQUIRED"}}
+
 DATABASES = {
-    "default": dj_database_url.parse(
-        config("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True,   # 👈 forces SSL
-    )
+    "default": db_config
 }
+
 
 
 # =======================
