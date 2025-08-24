@@ -26,8 +26,9 @@ It supports **one-to-one and group chat**, with features like **media sharing, m
 ## ⚙️ Installation & Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/saikrishna-chary/hospital_management.git
-   cd hospital_management
+   git clone https://github.com/saikrishna-chary/chat_application.git
+   cd chat_application
+
 
 
 ## Create a Virtual Environment
