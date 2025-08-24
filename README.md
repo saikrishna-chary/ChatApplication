@@ -1,7 +1,7 @@
 # 💬 Real-Time Chat Application
 
 A real-time chat application built with **Django, Django Channels, Redis, and MySQL**.  
-It supports **one-to-one and group chat**, with features like **media sharing, emoji support, message deletion, and smart timestamps**.  
+It supports **one-to-one and group chat**, with features like **media sharing, message deletion, and smart timestamps**.  
 
 ---
 
@@ -11,7 +11,7 @@ It supports **one-to-one and group chat**, with features like **media sharing, e
 - **Real-Time Messaging** – Powered by WebSockets (Django Channels + Redis).  
 - **Media Sharing** – Send and receive images/files in chat.  
 - **User Authentication** – Custom login/registration with email/OTP.  
-- **Message Controls** – Emoji support and delete option.  
+- **Message Controls** – Delete option.  
 
 ---
 
@@ -32,10 +32,8 @@ It supports **one-to-one and group chat**, with features like **media sharing, e
 
 ## Create a Virtual Environment
   - python -m venv venv
-  - Activate on Windows
-  - venv\Scripts\activate
-  - Activate on Linux/Mac
-  - source venv/bin/activate
+  - Activate on Windows : - venv\Scripts\activate
+  - Activate on Linux/Mac :  - source venv/bin/activate
 
 
 ## Install Dependencies
@@ -81,4 +79,39 @@ It supports **one-to-one and group chat**, with features like **media sharing, e
   - DATABASE_URL=mysql://user:password@host:port/chat_db
   - REDIS_URL=redis://host:port
   - ALLOWED_HOSTS=your-app.onrender.com
+
+## 4. Deploy
+
+  - Render will automatically install dependencies, run migrations, and start your app.
+  - Your app will be live at: - https://your-app.onrender.com
+
+## 📂 Project Structure 
+  - chat_application/
+  - │  
+  - ├── chat/                # Main app (models, views, consumers)
+  - ├── templates/           # HTML templates
+  - ├── static/              # CSS/JS/static files
+  - ├── chat_application/    # Project config (settings.py, asgi.py, urls.py)
+  - ├── media/               # Uploaded media files 
+  - ├── manage.py
+  - ├── requirements.txt
+  - └── README.md
+ 
+## 📌 Project Setup Timeline (Major Steps We Did)
+  - Created Django Project & App (chat_project → chat).
+  - Custom User Model with email login and OTP verification.
+  - One-to-One Chat with WebSockets (username-based routing).
+  - Group Chat with room creation, member management, and admin controls.
+  - Integrated Redis for WebSocket communication and message storage.
+  - Added Features: Media sharing, emoji support, message deletion, and smart timestamps.
+  - Frontend Pages: Login, Register, Chat Window, Group Chat UI.
+  - Deployment Setup: Requirements file, Procfile, environment variables for Render.
+---
+
+--- 
+## 📧 Author
+   - Sai Krishna
+   - GitHub: saikrishna-chary
+   - LinkedIn: linkedin.com/in/saikrishna-thumoju-bab1b026b
+   - Email: saikrishna70950@gmail.com
 ---
